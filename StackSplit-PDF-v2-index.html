@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>StackSplit PDF — Letter & Legal PDF Sorter</title>
+  <meta name="description" content="Split mixed Letter and Legal PDFs in your browser and get a sequence stack for easy printing." />
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <style>
+    :root{
+      --bg:#08111f;--panel:#0f1c2e;--panel2:#13233a;--ink:#f8fbff;--muted:#aebed0;
+      --accent:#52b6ff;--accent2:#7bd1ff;--line:#263a54;--ok:#6be3a4;--bad:#ff8f8f;--paper:#f7fbff;--dark:#0a1424;
+    }
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;background:radial-gradient(circle at 20% -10%,#173659 0,#08111f 44%,#060d18 100%);color:var(--ink)}
+    a{color:inherit}.shell{max-width:1120px;margin:auto;padding:0 18px}.nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-weight:800}.mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#06213a;font-size:19px;box-shadow:0 8px 28px rgba(82,182,255,.28)}.navlinks{display:flex;gap:18px;align-items:center}.navlinks a{font-size:14px;text-decoration:none;color:var(--muted)}.navcta{padding:10px 14px;border:1px solid var(--line);border-radius:10px;color:var(--ink)!important}
+    .hero{padding:68px 0 40px;text-align:center}.eyebrow{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,.035);padding:8px 12px;border-radius:999px;font-size:13px;color:#cfe7f8}.dot{width:7px;height:7px;border-radius:99px;background:var(--ok);box-shadow:0 0 0 4px rgba(107,227,164,.12)}h1{font-size:clamp(42px,8vw,76px);line-height:.98;letter-spacing:-.045em;margin:22px auto 20px;max-width:950px}.hero p{max-width:720px;margin:auto;color:var(--muted);font-size:clamp(17px,2.5vw,21px);line-height:1.55}.hero strong{color:#fff}
+    .app{max-width:900px;margin:38px auto 0;background:linear-gradient(180deg,rgba(19,35,58,.98),rgba(12,24,41,.98));border:1px solid #2a405d;border-radius:24px;box-shadow:0 32px 90px rgba(0,0,0,.38);overflow:hidden}.appbar{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}.appbar b{font-size:15px}.privacy{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px}.lock{font-size:14px}.workspace{padding:22px}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}.step{background:#0c1828;border:1px solid var(--line);border-radius:14px;padding:13px;text-align:left}.step b{display:block;color:var(--accent2);font-size:12px;margin-bottom:5px}.step span{font-size:13px;color:#d7e3ef}.drop{display:block;border:2px dashed #466484;border-radius:18px;padding:36px 18px;text-align:center;background:rgba(255,255,255,.025);cursor:pointer;transition:.18s}.drop:hover,.drop.drag{border-color:var(--accent);background:rgba(82,182,255,.07)}.dropicon{font-size:31px;margin-bottom:10px}.drop strong{font-size:17px}.drop .sub{display:block;color:var(--muted);font-size:13px;margin-top:7px}.filename{margin-top:12px;color:#d6e8f5;font-size:13px;overflow-wrap:anywhere}input[type=file]{display:none}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.btn{appearance:none;border:0;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06213a;padding:13px 18px;font-weight:800;font-size:14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn:hover{filter:brightness(1.05)}.btn.secondary{background:#182a42;color:#dceafb;border:1px solid #2d4666}.btn:disabled{opacity:.45;cursor:not-allowed}.progress{height:8px;background:#0a1423;border-radius:99px;overflow:hidden;margin-top:16px;display:none}.bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .2s}.status{margin-top:11px;font-size:13px;color:var(--muted)}.status.ok{color:var(--ok)}.status.bad{color:var(--bad)}
+    .results{display:none;margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}.resulthead{display:flex;justify-content:space-between;align-items:center;gap:12px}.resulthead h2{margin:0;font-size:21px}.badge{font-size:12px;padding:7px 10px;border-radius:999px;background:rgba(107,227,164,.1);color:var(--ok);border:1px solid rgba(107,227,164,.2)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.stat{padding:16px;border:1px solid var(--line);border-radius:14px;background:#0b1727;text-align:center}.stat b{display:block;font-size:30px;color:#fff}.stat span{font-size:12px;color:var(--muted)}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;font-size:13px;min-width:420px}th,td{border-bottom:1px solid var(--line);padding:11px;text-align:center}th{background:#13253d;color:#cce3f4}tr:last-child td{border-bottom:0}td:first-child,th:first-child{text-align:left}.downloads{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.small{font-size:12px;color:var(--muted);line-height:1.55;margin-top:12px}
+    .section{padding:90px 0}.section h2{text-align:center;font-size:clamp(30px,5vw,46px);letter-spacing:-.03em;margin:0 0 12px}.sectionlead{text-align:center;color:var(--muted);max-width:680px;margin:0 auto 35px;line-height:1.55}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:18px;padding:22px}.card .ico{font-size:27px}.card h3{margin:14px 0 8px}.card p{margin:0;color:var(--muted);line-height:1.55;font-size:14px}.pricing{max-width:660px;margin:auto;background:linear-gradient(180deg,#10243b,#0d1b2d);border:1px solid #325174;border-radius:24px;padding:30px;box-shadow:0 22px 60px rgba(0,0,0,.24)}.price{font-size:48px;font-weight:850;letter-spacing:-.04em}.price small{font-size:14px;color:var(--muted);font-weight:600}.checks{display:grid;gap:10px;margin:20px 0;color:#d6e6f3;font-size:14px}.check:before{content:'✓';color:var(--ok);font-weight:800;margin-right:10px}.disclaimer{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.5}.footer{border-top:1px solid var(--line);padding:28px 0 44px;color:var(--muted);font-size:12px;text-align:center}
+    @media(max-width:760px){.navlinks a:not(.navcta){display:none}.steps,.cards{grid-template-columns:1fr}.hero{padding-top:46px}.section{padding:70px 0}.app{border-radius:18px}.workspace{padding:16px}.stats{grid-template-columns:1fr}.downloads .btn,.actions .btn{width:100%}.appbar{align-items:flex-start;gap:8px;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="nav">
+      <a class="brand" href="#top"><span class="mark">S</span><span>StackSplit PDF</span></a>
+      <div class="navlinks"><a href="#features">Features</a><a href="#pricing">Pricing</a><a class="navcta" href="#sorter">Try it free</a></div>
+    </nav>
+
+    <main id="top">
+      <section class="hero">
+        <div class="eyebrow"><span class="dot"></span>Private, in-browser PDF processing</div>
+        <h1>Split Letter & Legal PDFs in seconds.</h1>
+        <p>Upload one mixed-size PDF. <strong>StackSplit</strong> separates Letter and Legal pages, preserves their order, and builds a sequence stack so printed pages can be reassembled correctly.</p>
+
+        <div class="app" id="sorter">
+          <div class="appbar"><b>PDF Sorter</b><div class="privacy"><span class="lock">🔒</span> Your file stays on this device</div></div>
+          <div class="workspace">
+            <div class="steps">
+              <div class="step"><b>STEP 1</b><span>Upload mixed PDF</span></div>
+              <div class="step"><b>STEP 2</b><span>Sort Letter & Legal</span></div>
+              <div class="step"><b>STEP 3</b><span>Download & stack</span></div>
+            </div>
+
+            <label class="drop" id="drop" for="fileInput">
+              <div class="dropicon">📄</div>
+              <strong>Choose a PDF</strong>
+              <span class="sub">Tap here or drag and drop a file</span>
+              <div class="filename" id="filename">No file selected</div>
+            </label>
+            <input id="fileInput" type="file" accept="application/pdf,.pdf" />
+
+            <div class="actions"><button class="btn" id="processBtn" disabled>⚡ Sort PDF</button><button class="btn secondary" id="resetBtn" type="button">Reset</button></div>
+            <div class="progress" id="progress"><div class="bar" id="bar"></div></div>
+            <div class="status" id="status"></div>
+
+            <div class="results" id="results">
+              <div class="resulthead"><h2>Results</h2><span class="badge">Ready to print</span></div>
+              <div class="stats"><div class="stat"><b id="totalCount">0</b><span>Total pages</span></div><div class="stat"><b id="letterCount">0</b><span>Letter pages</span></div><div class="stat"><b id="legalCount">0</b><span>Legal pages</span></div><div class="stat"><b id="a4Count">0</b><span>A4 pages</span></div><div class="stat"><b id="otherCount">0</b><span>Other pages</span></div></div>
+              <h3 style="margin:10px 0 10px">Sequence Stack</h3>
+              <div class="tablewrap"><table><thead><tr><th>Sequence</th><th>Letter</th><th>Legal</th><th>A4</th><th>Other</th></tr></thead><tbody id="stackBody"></tbody></table></div>
+              <div class="downloads"><a id="letterDownload" class="btn" download>⬇ Download Letter PDF</a><a id="legalDownload" class="btn" download>⬇ Download Legal PDF</a><a id="a4Download" class="btn" download>⬇ Download A4 PDF</a><a id="otherDownload" class="btn" download>⬇ Download Other PDF</a></div>
+              <p class="small">Print each output on its matching paper size, then follow the Sequence Stack to rebuild the original mixed-size order. Pages with uncommon sizes are preserved in the Other PDF.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="features">
+        <h2>Built for fast document prep</h2>
+        <p class="sectionlead">A simple utility for notaries, title professionals, signing agents, legal offices, and anyone working with mixed-size print packages.</p>
+        <div class="cards">
+          <div class="card"><div class="ico">⚡</div><h3>Instant sorting</h3><p>Automatically identifies Letter, Legal, and A4 pages, while preserving uncommon page sizes in a separate Other file.</p></div>
+          <div class="card"><div class="ico">🧩</div><h3>Sequence stack</h3><p>See each run of Letter, Legal, A4, and Other pages in original order so printed stacks can be recombined correctly.</p></div>
+          <div class="card"><div class="ico">🔐</div><h3>Private by design</h3><p>Processing happens inside the browser. The current version does not upload document contents to our server.</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="pricing">
+        <h2>Start free</h2>
+        <p class="sectionlead">Use the beta while you validate the product. Payments and subscriptions can be added later without changing the core sorter.</p>
+        <div class="pricing">
+          <div style="color:var(--accent2);font-weight:800;font-size:13px;margin-bottom:8px">BETA PLAN</div>
+          <div class="price">$0 <small>/ while in beta</small></div>
+          <div class="checks"><div class="check">Letter / Legal / A4 / Other separation</div><div class="check">Sequence Stack generation</div><div class="check">Private browser processing</div><div class="check">Works on phone, tablet, and computer</div></div>
+          <a class="btn" href="#sorter" style="width:100%">Try StackSplit now</a>
+          <div class="disclaimer">Always verify page counts and output before printing or relying on the generated files. This tool is provided as a document-processing convenience.</div>
+        </div>
+      </section>
+    </main>
+
+    <div class="footer">© 2026 StackSplit PDF. Independent utility; not affiliated with Notary Rotary.</div>
+  </div>
+
+<script>
+const { PDFDocument } = PDFLib;
+const fileInput = document.getElementById('fileInput');
+const processBtn = document.getElementById('processBtn');
+const resetBtn = document.getElementById('resetBtn');
+const drop = document.getElementById('drop');
+const filename = document.getElementById('filename');
+const statusEl = document.getElementById('status');
+const progress = document.getElementById('progress');
+const bar = document.getElementById('bar');
+const results = document.getElementById('results');
+let selectedFile = null;
+let urls = [];
+
+function setFile(file){
+  selectedFile = file || null;
+  filename.textContent = file ? `${file.name} • ${(file.size/1024/1024).toFixed(2)} MB` : 'No file selected';
+  processBtn.disabled = !file;
+  statusEl.textContent=''; statusEl.className='status'; results.style.display='none';
+}
+fileInput.addEventListener('change',e=>setFile(e.target.files[0]));
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag')}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag')}));
+drop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0]; if(f && (f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf'))) setFile(f); else showError('Please choose a PDF file.');});
+resetBtn.addEventListener('click',()=>{fileInput.value='';setFile(null);urls.forEach(URL.revokeObjectURL);urls=[];bar.style.width='0';progress.style.display='none'});
+function showError(msg){statusEl.textContent=msg;statusEl.className='status bad';}
+function classify(width,height){
+  const w=Math.min(width,height), h=Math.max(width,height); const tol=7;
+  if(Math.abs(w-612)<=tol && Math.abs(h-792)<=tol) return 'letter';
+  if(Math.abs(w-612)<=tol && Math.abs(h-1008)<=tol) return 'legal';
+  if(Math.abs(w-595.28)<=tol && Math.abs(h-841.89)<=tol) return 'a4';
+  return 'other';
+}
+function makeRuns(types){
+  const runs=[]; if(!types.length) return runs;
+  let type=types[0], count=1;
+  for(let i=1;i<types.length;i++){ if(types[i]===type) count++; else {runs.push({type,count}); type=types[i]; count=1;} }
+  runs.push({type,count}); return runs;
+}
+function downloadUrl(bytes,mime='application/pdf'){const blob=new Blob([bytes],{type:mime});const url=URL.createObjectURL(blob);urls.push(url);return url;}
+processBtn.addEventListener('click',async()=>{
+  if(!selectedFile) return;
+  processBtn.disabled=true; progress.style.display='block'; bar.style.width='8%'; statusEl.textContent='Reading PDF…'; statusEl.className='status'; results.style.display='none';
+  urls.forEach(URL.revokeObjectURL); urls=[];
+  try{
+    const buf=await selectedFile.arrayBuffer(); bar.style.width='20%';
+    const src=await PDFDocument.load(buf,{ignoreEncryption:false});
+    const pages=src.getPages(); const types=[]; const letterIdx=[]; const legalIdx=[]; const a4Idx=[]; const otherIdx=[];
+    pages.forEach((p,i)=>{const {width,height}=p.getSize();const type=classify(width,height);types.push(type);if(type==='letter') letterIdx.push(i); else if(type==='legal') legalIdx.push(i); else if(type==='a4') a4Idx.push(i); else otherIdx.push(i);});
+    bar.style.width='40%';
+    const letterDoc=await PDFDocument.create(); if(letterIdx.length){const copied=await letterDoc.copyPages(src,letterIdx);copied.forEach(p=>letterDoc.addPage(p));}
+    const legalDoc=await PDFDocument.create(); if(legalIdx.length){const copied=await legalDoc.copyPages(src,legalIdx);copied.forEach(p=>legalDoc.addPage(p));}
+    const a4Doc=await PDFDocument.create(); if(a4Idx.length){const copied=await a4Doc.copyPages(src,a4Idx);copied.forEach(p=>a4Doc.addPage(p));}
+    const otherDoc=await PDFDocument.create(); if(otherIdx.length){const copied=await otherDoc.copyPages(src,otherIdx);copied.forEach(p=>otherDoc.addPage(p));}
+    bar.style.width='68%';
+    const [letterBytes,legalBytes,a4Bytes,otherBytes]=await Promise.all([letterIdx.length?letterDoc.save():null,legalIdx.length?legalDoc.save():null,a4Idx.length?a4Doc.save():null,otherIdx.length?otherDoc.save():null]);
+    bar.style.width='86%';
+    document.getElementById('totalCount').textContent=pages.length; document.getElementById('letterCount').textContent=letterIdx.length; document.getElementById('legalCount').textContent=legalIdx.length; document.getElementById('a4Count').textContent=a4Idx.length; document.getElementById('otherCount').textContent=otherIdx.length;
+    const tbody=document.getElementById('stackBody'); tbody.innerHTML=''; makeRuns(types).forEach((r,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${i+1}</td><td>${r.type==='letter'?r.count:''}</td><td>${r.type==='legal'?r.count:''}</td><td>${r.type==='a4'?r.count:''}</td><td>${r.type==='other'?r.count:''}</td>`;tbody.appendChild(tr)});
+    const base=selectedFile.name.replace(/\.pdf$/i,''); const ld=document.getElementById('letterDownload'), gd=document.getElementById('legalDownload'), ad=document.getElementById('a4Download'), od=document.getElementById('otherDownload');
+    if(letterBytes){ld.href=downloadUrl(letterBytes);ld.download=`${base}_LETTER.pdf`;ld.style.display='inline-flex'} else ld.style.display='none';
+    if(legalBytes){gd.href=downloadUrl(legalBytes);gd.download=`${base}_LEGAL.pdf`;gd.style.display='inline-flex'} else gd.style.display='none';
+    if(a4Bytes){ad.href=downloadUrl(a4Bytes);ad.download=`${base}_A4.pdf`;ad.style.display='inline-flex'} else ad.style.display='none';
+    if(otherBytes){od.href=downloadUrl(otherBytes);od.download=`${base}_OTHER.pdf`;od.style.display='inline-flex'} else od.style.display='none';
+    bar.style.width='100%'; results.style.display='block'; statusEl.textContent='Finished. Your PDFs are ready.'; statusEl.className='status ok'; results.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }catch(err){showError(err.message||'Could not process this PDF.');}
+  finally{processBtn.disabled=false;setTimeout(()=>{progress.style.display='none';bar.style.width='0'},700)}
+});
+</script>
+</body>
+</html>
